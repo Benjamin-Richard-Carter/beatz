@@ -23,9 +23,9 @@ const sketch = (p5: P5CanvasInstance) => {
 
 function App() {
   return (
-    <>
+    <div className="p-0">
       <ReactP5Wrapper sketch={sketch} />
-    </>
+    </div>
   );
 }
 
