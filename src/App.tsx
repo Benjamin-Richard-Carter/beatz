@@ -1,30 +1,67 @@
-import { P5CanvasInstance, ReactP5Wrapper } from '@p5-wrapper/react';
+import { ReactP5Wrapper } from '@p5-wrapper/react';
+import { Canvas } from './P5/Canvas';
+import React, { useState, useRef, useEffect } from 'react';
 
-const sketch = (p5: P5CanvasInstance) => {
-  p5.setup = () => {
-    p5.createCanvas(p5.windowWidth, p5.windowHeight, p5.WEBGL);
-  };
-
-  p5.windowResized = () => {
-    p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
-  };
-
-  p5.draw = () => {
-    p5.background(250);
-    p5.normalMaterial();
-    p5.push();
-    p5.rotateZ(p5.frameCount * 0.01);
-    p5.rotateX(p5.frameCount * 0.01);
-    p5.rotateY(p5.frameCount * 0.01);
-    p5.plane(100);
-    p5.pop();
-  };
-};
+import './app.css';
 
 function App() {
+  const [audioFile, setAudioFile] = useState<File | null>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+  const [analyzerNode, setAnalyzerNode] = useState<AnalyserNode | null>(null);
+
+  const handleFileDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const files = event.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      if (file.type === 'audio/mpeg' || file.type === 'audio/mp3') {
+        setAudioFile(file);
+        if (audioRef.current) {
+          audioRef.current.src = URL.createObjectURL(file);
+          audioRef.current.play();
+        }
+      } else {
+        alert('Please drop an MP3 file.');
+      }
+    }
+  };
+
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+  };
+
+  useEffect(() => {
+    if (audioFile && audioRef.current) {
+      const context = new AudioContext();
+      const source = context.createMediaElementSource(audioRef.current);
+      const analyzer = context.createAnalyser();
+      source.connect(analyzer);
+      analyzer.connect(context.destination);
+      setAudioContext(context);
+      setAnalyzerNode(analyzer);
+    }
+  }, [audioFile]);
+
+  useEffect(() => {
+    if (audioContext && analyzerNode) {
+      const bufferLength = analyzerNode.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+      analyzerNode.getByteFrequencyData(dataArray);
+    }
+  }, [audioContext, analyzerNode]);
+
   return (
-    <div className="p-0">
-      <ReactP5Wrapper sketch={sketch} />
+    <div
+      className="p-0 bg-red-600"
+      onDrop={handleFileDrop}
+      onDragOver={handleDragOver}>
+      <audio
+        ref={audioRef}
+        style={{ display: audioFile ? 'block' : 'none' }}
+      />
+
+      <ReactP5Wrapper sketch={Canvas} />
     </div>
   );
 }
