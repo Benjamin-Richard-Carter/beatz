@@ -1,8 +1,13 @@
-import './App.css';
 import { P5CanvasInstance, ReactP5Wrapper } from '@p5-wrapper/react';
 
-function sketch(p5: P5CanvasInstance) {
-  p5.setup = () => p5.createCanvas(600, 400, p5.WEBGL);
+const sketch = (p5: P5CanvasInstance) => {
+  p5.setup = () => {
+    p5.createCanvas(p5.windowWidth, p5.windowHeight, p5.WEBGL);
+  };
+
+  p5.windowResized = () => {
+    p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
+  };
 
   p5.draw = () => {
     p5.background(250);
@@ -14,7 +19,7 @@ function sketch(p5: P5CanvasInstance) {
     p5.plane(100);
     p5.pop();
   };
-}
+};
 
 function App() {
   return (
