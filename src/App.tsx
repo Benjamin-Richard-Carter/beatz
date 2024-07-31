@@ -5,6 +5,7 @@ import { waves } from './scenes/waves';
 import { dots } from './scenes/dots';
 import { newTest } from './scenes/newTest';
 import { test } from './scenes/test';
+import { obtain } from './scenes/test';
 
 function App() {
   const [audioFile, setAudioFile] = useState<File | null>(null);
@@ -40,6 +41,8 @@ function App() {
       setAudioContext(context);
       const source = context.createMediaElementSource(audioRef.current);
       const analyzer = context.createAnalyser();
+
+      analyzer.fftSize = 1024;
       setAnalyzerNode(analyzer);
 
       source.connect(analyzer);
@@ -60,7 +63,7 @@ function App() {
         />
       </div>
       <ReactP5Wrapper
-        sketch={dots}
+        sketch={newTest}
         analyzerNode={analyzerNode}
         audioContext={audioContext}
       />
