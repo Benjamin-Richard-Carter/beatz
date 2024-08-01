@@ -1,11 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './app.css';
 import { ReactP5Wrapper } from '@p5-wrapper/react';
-import { waves } from './scenes/waves';
-import { dots } from './scenes/dots';
 import { newTest } from './scenes/newTest';
-import { test } from './scenes/test';
-import { obtain } from './scenes/test';
+import { waves } from './scenes/waves';
 
 function App() {
   const [audioFile, setAudioFile] = useState<File | null>(null);
@@ -13,7 +10,7 @@ function App() {
   const [analyzerNode, setAnalyzerNode] = useState<AnalyserNode | null>(null);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
 
-  const handleFileDrop = (event: React.DragEvent<HTMLDivElement>) => {
+  const handleFileDrop = async (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
 
     const files = event.dataTransfer.files;
@@ -41,10 +38,8 @@ function App() {
       setAudioContext(context);
       const source = context.createMediaElementSource(audioRef.current);
       const analyzer = context.createAnalyser();
-
       analyzer.fftSize = 1024;
       setAnalyzerNode(analyzer);
-
       source.connect(analyzer);
       analyzer.connect(context.destination);
     }
@@ -58,12 +53,12 @@ function App() {
       <div className="flex justify-center items-center bg-black">
         <audio
           ref={audioRef}
-          //controls
+          controls
           style={{ display: audioFile ? 'block' : 'none' }}
         />
       </div>
       <ReactP5Wrapper
-        sketch={newTest}
+        sketch={waves}
         analyzerNode={analyzerNode}
         audioContext={audioContext}
       />

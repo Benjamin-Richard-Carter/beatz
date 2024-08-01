@@ -1,22 +1,28 @@
 import { Sketch, SketchProps } from '@p5-wrapper/react';
+import { createBeatDetector } from '../utils/audio';
 
 type MySketchProps = SketchProps & {
   analyzerNode: AnalyserNode | null;
 };
 
 export const waves: Sketch<MySketchProps> = (p5) => {
-  let analyzerNode: AnalyserNode | null = null;
-  let frequencyDataArray: Uint8Array;
-  let amplitudeHistory: number[][];
-  const historyLength = 10;
+  let analyzerNode: AnalyserNode | undefined = undefined;
+
+  const beatDetector = createBeatDetector({
+    energyHistoryLength: 500,
+    minTimeBetweenBeats: 200,
+    beatsPerBar: 2,
+    onBarCompleted: () => {
+      console.log('Bar completed');
+    },
+
+    onBeatDetected: () => {
+      console.log('Beat detected');
+    },
+  });
 
   p5.setup = () => {
     p5.createCanvas(p5.windowWidth, p5.windowHeight);
-
-    frequencyDataArray = new Uint8Array(p5.width);
-    amplitudeHistory = Array.from({ length: historyLength }, () =>
-      new Array(frequencyDataArray.length).fill(0)
-    );
   };
 
   p5.windowResized = () => {
@@ -26,23 +32,19 @@ export const waves: Sketch<MySketchProps> = (p5) => {
   p5.updateWithProps = (props: MySketchProps) => {
     if (props.analyzerNode) {
       analyzerNode = props.analyzerNode;
+      beatDetector.initializeAnalyzerNode(analyzerNode);
     }
   };
 
   p5.draw = () => {
     if (analyzerNode) {
-      frequencyDataArray = new Uint8Array(analyzerNode.frequencyBinCount);
-      analyzerNode.getByteFrequencyData(frequencyDataArray);
+      //beatDetector.detectBeat(p5.millis());
+
+      const time = p5.millis();
+      const frequencyDataArray =
+        beatDetector.detectBeat(time).frequencyDataArray;
+
       p5.background(0);
-
-      if (!amplitudeHistory) {
-        amplitudeHistory = Array.from({ length: historyLength }, () =>
-          new Array(frequencyDataArray.length).fill(0)
-        );
-      }
-
-      amplitudeHistory.pop();
-      amplitudeHistory.unshift([...frequencyDataArray]);
 
       const numBands = frequencyDataArray.length;
       const canvasWidth = p5.width;

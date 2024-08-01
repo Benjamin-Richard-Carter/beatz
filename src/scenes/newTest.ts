@@ -6,8 +6,6 @@ type MySketchProps = SketchProps & {
   analyzerNode: AnalyserNode | null;
 };
 
-type ColorPair = [string, string];
-
 export const newTest: Sketch<MySketchProps> = (p5) => {
   let analyzerNode: AnalyserNode | null = null;
   let frequencyDataArray: Uint8Array;
@@ -15,21 +13,22 @@ export const newTest: Sketch<MySketchProps> = (p5) => {
   let shuffledIndices: number[];
   let colorAssignments: boolean[];
 
+  type ColorPair = [string, string];
+
   const colorPairs: Record<number, ColorPair> = {
-    0: ['#0e53a1', '#ffffff'],
-    1: ['#ff6600', '#ff0000'],
-    2: ['#ff00b3', '#a200ff'],
-    3: ['#ff0000', '#09ff00'],
-    4: ['#00ffdd', '#0059ff'],
+    0: ['#9b52bd', '#00ff4c'],
+    1: ['#ffffff', '#505050'],
+    2: ['#ff0000', '#ffe600'],
+    3: ['#0059ff', '#8400ff'],
+    4: ['#8400ff', '#ff008c'],
   };
 
   const beatDetector = createBeatDetector({
-    energyHistoryLength: 100,
+    energyHistoryLength: 500,
     minTimeBetweenBeats: 200,
-    beatsPerBar: 8,
-    onBeatDetected: () => console.log('quarter beat detected!'),
+    beatsPerBar: 4,
+
     onBarCompleted: () => {
-      console.log('one bar completed!');
       currentColorPair =
         (currentColorPair + 1) % Object.keys(colorPairs).length;
       randomizeColorAssignments(colorAssignments.length);
@@ -140,12 +139,6 @@ export const newTest: Sketch<MySketchProps> = (p5) => {
         p5.noStroke();
         p5.ellipse(x, y, diameter, diameter);
       }
-
-      p5.textSize(32);
-      p5.fill(255);
-      p5.text('beat: ' + beatDetector.getBeatCount(), 20, 40);
-      p5.text('scene: ' + currentColorPair, 200, 40);
-      p5.text('FFT size: ' + numBands * 2, 400, 40);
     }
   };
 };
