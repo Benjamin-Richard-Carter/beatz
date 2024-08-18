@@ -38,8 +38,6 @@ export const waves: Sketch<MySketchProps> = (p5) => {
 
   p5.draw = () => {
     if (analyzerNode) {
-      //beatDetector.detectBeat(p5.millis());
-
       const time = p5.millis();
       const frequencyDataArray =
         beatDetector.detectBeat(time).frequencyDataArray;

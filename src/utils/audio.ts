@@ -85,15 +85,15 @@ export const createBeatDetector = ({
       const beatStrength = result.spectralEnergyFlux / threshold;
 
       if (beatStrength > 1) {
-        result.beatAccumulator++;
+        beatAccumulator++;
         onBeatDetected();
 
         if (result.beatAccumulator === beatsPerBar) {
           onBarCompleted();
-          result.beatAccumulator = 0;
+          beatAccumulator = 0;
         }
       }
-      result.lastBeatTime = currentTime;
+      lastBeatTime = currentTime;
     }
 
     return result;

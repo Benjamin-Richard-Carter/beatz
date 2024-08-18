@@ -1,49 +1,21 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import './app.css';
 import { ReactP5Wrapper } from '@p5-wrapper/react';
-import { newTest } from './scenes/newTest';
+import { useAudio } from './hooks/useAudio';
+
+import { testing } from './scenes/testing';
+import { dots } from './scenes/dots';
 import { waves } from './scenes/waves';
 
 function App() {
-  const [audioFile, setAudioFile] = useState<File | null>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const [analyzerNode, setAnalyzerNode] = useState<AnalyserNode | null>(null);
-  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
-
-  const handleFileDrop = async (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-
-    const files = event.dataTransfer.files;
-    if (files.length > 0) {
-      const file = files[0];
-      if (file.type === 'audio/mpeg' || file.type === 'audio/mp3') {
-        setAudioFile(file);
-        if (audioRef.current) {
-          audioRef.current.src = URL.createObjectURL(file);
-          audioRef.current.play();
-        }
-      } else {
-        alert('Please drop an MP3 file.');
-      }
-    }
-  };
-
-  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-  };
-
-  useEffect(() => {
-    if (audioFile && audioRef.current) {
-      const context = new AudioContext();
-      setAudioContext(context);
-      const source = context.createMediaElementSource(audioRef.current);
-      const analyzer = context.createAnalyser();
-      analyzer.fftSize = 1024;
-      setAnalyzerNode(analyzer);
-      source.connect(analyzer);
-      analyzer.connect(context.destination);
-    }
-  }, [audioFile]);
+  const {
+    audioFile,
+    audioRef,
+    analyzerNode,
+    audioContext,
+    handleFileDrop,
+    handleDragOver,
+  } = useAudio();
 
   return (
     <div
@@ -53,12 +25,13 @@ function App() {
       <div className="flex justify-center items-center bg-black">
         <audio
           ref={audioRef}
-          controls
+          //controls
           style={{ display: audioFile ? 'block' : 'none' }}
         />
       </div>
       <ReactP5Wrapper
-        sketch={waves}
+        key={audioFile ? audioFile.name : 'no-file'}
+        sketch={dots}
         analyzerNode={analyzerNode}
         audioContext={audioContext}
       />
