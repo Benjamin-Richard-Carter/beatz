@@ -1,11 +1,19 @@
-import React from 'react';
+import { useRef, useState } from 'react';
 import './app.css';
-import { ReactP5Wrapper } from '@p5-wrapper/react';
-import { useAudio } from './hooks/useAudio';
-
-import { testing } from './scenes/testing';
+import { ReactP5Wrapper, Sketch } from '@p5-wrapper/react';
+import { useAudioPlayer } from './hooks/useAudioPlayer';
 import { dots } from './scenes/dots';
 import { waves } from './scenes/waves';
+import {
+  Exit,
+  Menu,
+  MenuBackdrop,
+  ModeSelector,
+  PlayerControls,
+  ScreenControls,
+} from './menu';
+import { AnimatePresence, m } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 function App() {
   const {
@@ -15,27 +23,67 @@ function App() {
     audioContext,
     handleFileDrop,
     handleDragOver,
-  } = useAudio();
+    handleFileSelect,
+    ...audioPlayer
+  } = useAudioPlayer();
+
+  const [menuToggled, setMenuToggled] = useState(false);
+  const screenRef = useRef<HTMLDivElement>(null);
+
+  const scenes: Record<string, Sketch> = {
+    dots: dots,
+    waves: waves,
+  };
+
+  const handleonClick = () => {
+    if (!menuToggled) {
+      setMenuToggled(true);
+    }
+  };
 
   return (
-    <div
-      className="bg-red w-screen h-screen "
+    <motion.div
+      className="bg-black w-screen h-screen flex flex-col items-center justify-center"
       onDrop={handleFileDrop}
-      onDragOver={handleDragOver}>
-      <div className="flex justify-center items-center bg-black">
-        <audio
-          ref={audioRef}
-          //controls
-          style={{ display: audioFile ? 'block' : 'none' }}
+      onDragOver={handleDragOver}
+      onTap={handleonClick}
+      ref={screenRef}>
+      <audio
+        ref={audioRef}
+        style={{ display: audioFile ? 'block' : 'none' }}
+      />
+
+      {/* <div className="text-white text-9xl italic font-extrabold tracking-wider pb-10	">
+        BEATZ
+      </div> */}
+
+      <AnimatePresence>
+        {menuToggled && (
+          <>
+            <MenuBackdrop>
+              <Menu>
+                <div className="flex flex-row w-full gap-3">
+                  <ModeSelector handleFileSelect={handleFileSelect} />
+                  <ScreenControls screenRef={screenRef} />
+                  <Exit onClick={() => setMenuToggled(false)} />
+                </div>
+
+                {audioFile && <PlayerControls {...audioPlayer} />}
+              </Menu>
+            </MenuBackdrop>
+          </>
+        )}
+      </AnimatePresence>
+
+      <div className="absolute z-0">
+        <ReactP5Wrapper
+          key={audioFile ? audioFile.name : 'no-file'}
+          sketch={dots}
+          analyzerNode={analyzerNode}
+          audioContext={audioContext}
         />
       </div>
-      <ReactP5Wrapper
-        key={audioFile ? audioFile.name : 'no-file'}
-        sketch={dots}
-        analyzerNode={analyzerNode}
-        audioContext={audioContext}
-      />
-    </div>
+    </motion.div>
   );
 }
 

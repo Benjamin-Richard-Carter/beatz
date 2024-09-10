@@ -1,8 +1,5 @@
-import type { P5CanvasInstance } from '@p5-wrapper/react';
+import { Sketch, SketchProps } from '@p5-wrapper/react';
 
-export type SceneParams = {
-  p5: P5CanvasInstance;
-  analyzerNode: AnalyserNode | null;
-};
+export type AudioMode = 'file' | 'mic' | 'tap';
 
-export type RGBA = `rgba(${number}, ${number}, ${number}, ${number})`;
+interface VisualizerProps extends SketchProps {}

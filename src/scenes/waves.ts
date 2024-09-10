@@ -49,7 +49,19 @@ export const waves: Sketch<MySketchProps> = (p5) => {
       const canvasHeight = p5.height;
       const numBars = 5;
       const barHeight = canvasHeight / (numBars - 10);
-      const colors = ['#552183', '#00BFFF', '#FFD700', '#32CD32', '#FF4500'];
+      const colors = [
+        '#552183',
+        '#00BFFF',
+        '#FFD700',
+        '#32CD32',
+        '#FF4500',
+        '#FF1493',
+        '#FF8C00',
+        '#8A2BE2',
+        '#FF00FF',
+        '#00FF00',
+      ];
+
       const selectedIndex = Math.floor(numBands / 5);
       const selectedValue = frequencyDataArray[selectedIndex];
       const distortion = p5.map(selectedValue, 0, 255, 0, barHeight * 0.3);

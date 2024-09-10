@@ -9,7 +9,6 @@ type BeatDetectorConfig = {
 
 type BeatDetector = {
   detectBeat: (currentTime: number) => BeatDetectionResult;
-  getBeatCount: () => number;
   initializeAnalyzerNode: (analyzerNode: AnalyserNode) => void;
 };
 
@@ -99,11 +98,8 @@ export const createBeatDetector = ({
     return result;
   };
 
-  const getBeatCount = (): number => beatAccumulator + 1;
-
   return {
     detectBeat,
-    getBeatCount,
     initializeAnalyzerNode,
   };
 };
