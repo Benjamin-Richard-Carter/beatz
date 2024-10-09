@@ -26,7 +26,7 @@ export const Menu = ({ children }: PropsWithChildren) => {
         stiffness: 260,
         damping: 20,
       }}
-      className="w-full m-5 rounded-3xl p-3 gap-3 flex flex-col z-50 overflow-clip md:w-1/3 ">
+      className="w-full m-5 rounded-3xl p-3 gap-3 flex flex-col z-50 overflow-clip md:w-1/3 items-center  ">
       <AnimatePresence>{children}</AnimatePresence>
     </motion.div>
   );
@@ -39,16 +39,23 @@ export const MenuBackdrop = ({ children }: PropsWithChildren) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
-      className="w-full h-full flex items-center justify-center z-50 bg-black"
+      className="w-full h-full flex items-center justify-center z-50 backdrop-blur"
       onClick={(e) => e.stopPropagation()}>
       {children}
     </motion.div>
   );
 };
 
+type ModeSelector = Pick<
+  useAudioPlayerReturn,
+  'handleFileSelect' | 'audioMode'
+>;
+
 export const ModeSelector = ({
   handleFileSelect,
-}: Pick<useAudioPlayerReturn, 'handleFileSelect'>) => {
+  audioMode,
+  handleSetAudioMode,
+}: ModeSelector) => {
   type Mode = {
     mode: AudioMode;
     name: string;
@@ -71,7 +78,12 @@ export const ModeSelector = ({
       icon: <TbDeviceFloppy />,
       onClick: handleClick,
     },
-    { mode: 'mic', name: 'Mic', icon: <TbMicrophone /> },
+    {
+      mode: 'mic',
+      name: 'Mic',
+      icon: <TbMicrophone />,
+      onClick: () => handleSetAudioMode('mic'),
+    },
     { mode: 'tap', name: 'Tap', icon: <TbHandFinger /> },
   ];
 
@@ -151,14 +163,14 @@ export const PlayerControls = ({
   elapsedTimePercentage,
   audioDurationFormatted,
   elapsedTimeFormatted,
-}: Partial<useAudioPlayerReturn>) => {
+}: useAudioPlayerReturn['playerInfo']) => {
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!seekToPositionfromPercentage) return;
     seekToPositionfromPercentage(Number(e.target.value));
   };
 
   return (
-    <motion.div className="flex flex-col justify-center p-3 gap-3 bg-white text-black rounded-2xl py-5">
+    <motion.div className="w-full flex flex-col justify-center p-3 gap-3 bg-white text-black rounded-2xl py-5">
       <div className="flex flex-row items-center justify-center gap-3 ">
         <button
           onClick={togglePlayPause}

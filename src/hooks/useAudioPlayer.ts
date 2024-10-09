@@ -6,36 +6,39 @@ export function useAudioPlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [analyzerNode, setAnalyzerNode] = useState<AnalyserNode | null>(null);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
-  const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
 
-  const setupAudioNodes = async () => {
-    if (audioRef.current && !audioContext) {
-      const newContext = new AudioContext();
-
-      if (newContext.state === 'suspended') {
-        await newContext.resume();
-      }
-
-      const newSource = newContext.createMediaElementSource(audioRef.current);
-      const newAnalyzer = newContext.createAnalyser();
-      newAnalyzer.fftSize = 1024;
-      newSource.connect(newAnalyzer);
-      newAnalyzer.connect(newContext.destination);
-
-      setAudioContext(newContext);
-      setAnalyzerNode(newAnalyzer);
-      sourceRef.current = newSource;
+  const setupAudioPipeline = ({
+    source,
+  }: {
+    source: HTMLAudioElement | null;
+  }) => {
+    if (!source) {
+      console.error('No source provided');
+      return;
     }
+    const audioContext = new AudioContext();
+    const analyzerNode = audioContext.createAnalyser();
+    analyzerNode.fftSize = 512;
+    const sourceNode = audioContext.createMediaElementSource(source);
+    sourceNode.connect(analyzerNode);
+    analyzerNode.connect(audioContext.destination);
+    setAudioContext(audioContext);
+    setAnalyzerNode(analyzerNode);
   };
 
   const loadAudioFile = async (file: File) => {
     if (file.type === 'audio/mpeg' || file.type === 'audio/mp3') {
       setAudioFile(file);
+
+      if (!audioFile) {
+        setupAudioPipeline({ source: audioRef.current });
+      }
+
       if (audioRef.current) {
         audioRef.current.src = URL.createObjectURL(file);
-        await setupAudioNodes();
+
         try {
           await audioRef.current.play();
           setIsPlaying(true);
@@ -84,6 +87,12 @@ export function useAudioPlayer() {
     event.preventDefault();
   };
 
+  const updateElapsedTime = () => {
+    if (audioRef.current) {
+      setElapsedTime(audioRef.current.currentTime);
+    }
+  };
+
   useEffect(() => {
     const audio = audioRef.current;
     if (audio) {
@@ -93,9 +102,7 @@ export function useAudioPlayer() {
       if (audio) {
         audio.removeEventListener('ended', () => setIsPlaying(false));
       }
-      if (sourceRef.current) {
-        sourceRef.current.disconnect();
-      }
+
       if (analyzerNode) {
         analyzerNode.disconnect();
       }
@@ -104,18 +111,6 @@ export function useAudioPlayer() {
       }
     };
   }, []);
-
-  useEffect(() => {
-    if (isPlaying) {
-      const updateElapsedTime = () => {
-        if (audioRef.current) {
-          setElapsedTime(audioRef.current.currentTime);
-          requestAnimationFrame(updateElapsedTime);
-        }
-      };
-      updateElapsedTime();
-    }
-  }, [isPlaying]);
 
   const audioDurationFormatted = secondsToHHMMSS(audioRef.current?.duration);
   const elapsedTimeFormatted = secondsToHHMMSS(elapsedTime);
@@ -133,6 +128,16 @@ export function useAudioPlayer() {
     }
   };
 
+  const playerInfo = {
+    isPlaying,
+    togglePlayPause,
+    seekToPositionfromPercentage,
+    updateElapsedTime,
+    audioDurationFormatted,
+    elapsedTimeFormatted,
+    elapsedTimePercentage,
+  };
+
   return {
     audioFile,
     audioRef,
@@ -141,12 +146,7 @@ export function useAudioPlayer() {
     handleFileDrop,
     handleFileSelect,
     handleDragOver,
-    isPlaying,
-    togglePlayPause,
-    seekToPositionfromPercentage,
-    audioDurationFormatted,
-    elapsedTimeFormatted,
-    elapsedTimePercentage,
+    playerInfo,
   };
 }
 

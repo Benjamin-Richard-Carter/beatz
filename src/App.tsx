@@ -21,10 +21,10 @@ function App() {
     audioRef,
     analyzerNode,
     audioContext,
+    playerInfo,
     handleFileDrop,
     handleDragOver,
     handleFileSelect,
-    ...audioPlayer
   } = useAudioPlayer();
 
   const [menuToggled, setMenuToggled] = useState(false);
@@ -53,22 +53,21 @@ function App() {
         style={{ display: audioFile ? 'block' : 'none' }}
       />
 
-      {/* <div className="text-white text-9xl italic font-extrabold tracking-wider pb-10	">
-        BEATZ
-      </div> */}
-
       <AnimatePresence>
         {menuToggled && (
           <>
             <MenuBackdrop>
               <Menu>
                 <div className="flex flex-row w-full gap-3">
-                  <ModeSelector handleFileSelect={handleFileSelect} />
+                  <ModeSelector
+                    handleFileSelect={handleFileSelect}
+                    audioMode={playerInfo.audioMode}
+                  />
                   <ScreenControls screenRef={screenRef} />
                   <Exit onClick={() => setMenuToggled(false)} />
                 </div>
 
-                {audioFile && <PlayerControls {...audioPlayer} />}
+                {audioFile && <PlayerControls {...playerInfo} />}
               </Menu>
             </MenuBackdrop>
           </>

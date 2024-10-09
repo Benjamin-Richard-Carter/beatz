@@ -90,10 +90,8 @@ export const dots: Sketch<MySketchProps> = (p5) => {
       p5.background('#000000');
 
       const numBands = frequencyDataArray.length;
-
       const canvasWidth = p5.width;
       const canvasHeight = p5.height;
-
       const aspectRatio = canvasWidth / canvasHeight;
       let cols = Math.round(Math.sqrt(numBands * aspectRatio));
       let rows = Math.round(Math.sqrt(numBands / aspectRatio));
@@ -109,20 +107,16 @@ export const dots: Sketch<MySketchProps> = (p5) => {
       const cellWidth = canvasWidth / cols;
       const cellHeight = canvasHeight / rows;
       const cellSize = Math.min(cellWidth, cellHeight);
-
       const startX = (canvasWidth - cols * cellSize) / 2;
       const startY = (canvasHeight - rows * cellSize) / 2;
 
       for (let i = 0; i < cols * rows; i++) {
         const col = i % cols;
         const row = Math.floor(i / cols);
-
         const x = startX + col * cellSize + cellSize / 2;
         const y = startY + row * cellSize + cellSize / 2;
-
         const frequencyIndex = i % numBands;
         const shuffledIndex = shuffledIndices[frequencyIndex];
-
         const maxDiameter = cellSize * 0.9;
         const baseDiameter = maxDiameter * 0.3;
         const diameter = p5.map(

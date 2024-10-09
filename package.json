@@ -12,6 +12,7 @@
   "dependencies": {
     "@p5-wrapper/react": "^4.4.2",
     "@uidotdev/usehooks": "^2.4.1",
+    "ahooks": "^3.8.1",
     "chroma-js": "^2.6.0",
     "framer-motion": "^11.5.4",
     "p5": "^1.9.4",
