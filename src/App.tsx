@@ -59,7 +59,7 @@ function App() {
       <div className="absolute z-0">
         <ReactP5Wrapper
           key={player.audioFile ? player.audioFile.name : 'no-file'}
-          sketch={dots}
+          sketch={waves}
           analyzerNode={player.analyzerNode}
           audioContext={player.audioContext}
         />
