@@ -27,7 +27,7 @@ export const MenuContainer = ({ children }: PropsWithChildren) => {
         stiffness: 260,
         damping: 20,
       }}
-      className="w-full m-5 rounded-3xl p-3 gap-3 flex flex-col z-50 overflow-clip md:w-1/3 items-center  ">
+      className="w-full m-5 rounded-3xl p-3 gap-3 flex flex-col z-50 items-center md:w-1/3  ">
       <AnimatePresence>{children}</AnimatePresence>
     </motion.div>
   );

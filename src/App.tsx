@@ -7,7 +7,7 @@ import { waves } from './scenes/waves';
 import { AnimatePresence } from 'framer-motion';
 import { motion } from 'framer-motion';
 import { PlayerControls } from './menu/playerControls';
-import { ScreenControls, Exit } from './menu/screenControls';
+import { ScreenControls, Exit, TrackInfo } from './menu/screenControls';
 import { MenuContainer, MenuBackdrop } from './menu/layout';
 
 function App() {
@@ -43,7 +43,8 @@ function App() {
           <>
             <MenuBackdrop>
               <MenuContainer>
-                <div className="flex flex-row-reverse w-full gap-3 ">
+                <div className="flex flex-row w-full gap-3 ">
+                  <TrackInfo {...player.trackData} />
                   <ScreenControls screenRef={screenRef} />
                   <Exit onClick={() => setMenuToggled(false)} />
                 </div>

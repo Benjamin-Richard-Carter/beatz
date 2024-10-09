@@ -1,5 +1,6 @@
 import { elapsedPercentage, secondsToHHMMSS } from '../utils/time';
 import { useState, useRef, useEffect } from 'react';
+import { useTrackID } from './useTrackID';
 
 export function useAudioPlayer() {
   const [audioFile, setAudioFile] = useState<File | null>(null);
@@ -8,6 +9,7 @@ export function useAudioPlayer() {
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const { getTrackID, ...trackData } = useTrackID();
 
   const setupAudioPipeline = ({
     source,
@@ -46,6 +48,12 @@ export function useAudioPlayer() {
           console.error('Autoplay failed:', error);
           setIsPlaying(false);
         }
+      }
+
+      try {
+        //await getTrackID(file);
+      } catch (error) {
+        console.error('Track ID failed:', error);
       }
     } else {
       alert('Please drop an MP3 file.');
@@ -161,12 +169,13 @@ export function useAudioPlayer() {
     handleFileDrop,
     handleFileSelect,
     handleDragOver,
-    isPlaying,
     togglePlayPause,
     seekToPositionfromPercentage,
+    isPlaying,
     audioDurationFormatted,
     elapsedTimeFormatted,
     elapsedTimePercentage,
+    trackData,
   };
 }
 
