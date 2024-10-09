@@ -7,7 +7,7 @@ export function useAudioPlayer() {
   const [analyzerNode, setAnalyzerNode] = useState<AnalyserNode | null>(null);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [elapsedTime, setElapsedTime] = useState<number>(0);
+  const [elapsedTime, setElapsedTime] = useState(0);
 
   const setupAudioPipeline = ({
     source,
@@ -87,11 +87,36 @@ export function useAudioPlayer() {
     event.preventDefault();
   };
 
-  const updateElapsedTime = () => {
-    if (audioRef.current) {
-      setElapsedTime(audioRef.current.currentTime);
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.addEventListener('ended', () => setIsPlaying(false));
     }
-  };
+    return () => {
+      if (audio) {
+        audio.removeEventListener('ended', () => setIsPlaying(false));
+      }
+
+      if (analyzerNode) {
+        analyzerNode.disconnect();
+      }
+      if (audioContext) {
+        audioContext.close();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isPlaying) {
+      const updateElapsedTime = () => {
+        if (audioRef.current) {
+          setElapsedTime(audioRef.current.currentTime);
+          requestAnimationFrame(updateElapsedTime);
+        }
+      };
+      updateElapsedTime();
+    }
+  }, [isPlaying]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -128,16 +153,6 @@ export function useAudioPlayer() {
     }
   };
 
-  const playerInfo = {
-    isPlaying,
-    togglePlayPause,
-    seekToPositionfromPercentage,
-    updateElapsedTime,
-    audioDurationFormatted,
-    elapsedTimeFormatted,
-    elapsedTimePercentage,
-  };
-
   return {
     audioFile,
     audioRef,
@@ -146,7 +161,12 @@ export function useAudioPlayer() {
     handleFileDrop,
     handleFileSelect,
     handleDragOver,
-    playerInfo,
+    isPlaying,
+    togglePlayPause,
+    seekToPositionfromPercentage,
+    audioDurationFormatted,
+    elapsedTimeFormatted,
+    elapsedTimePercentage,
   };
 }
 
