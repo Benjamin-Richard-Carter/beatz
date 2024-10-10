@@ -16,7 +16,7 @@ export type sketchList = Record<SketchNames, Sketch>;
 
 function App() {
   const player = useAudioPlayer();
-  const [menuToggled, setMenuToggled] = useState(false);
+  const [menuToggled, setMenuToggled] = useState(true);
   const screenRef = useRef<HTMLDivElement>(null);
   const [currentSketch, setCurrentSketch] = useState<SketchNames>('dots');
 
@@ -49,7 +49,7 @@ function App() {
             <MenuBackdrop>
               <MenuContainer>
                 <div className="flex flex-row w-full gap-3 ">
-                  <TrackInfo {...player.trackData} />
+                  <TrackInfo {...player} />
                   <ScreenControls screenRef={screenRef} />
                   <Exit onClick={() => setMenuToggled(false)} />
                 </div>

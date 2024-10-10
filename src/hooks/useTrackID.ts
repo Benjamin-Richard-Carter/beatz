@@ -38,7 +38,6 @@ export const useTrackID = (): UseTrackID => {
   const [trackID, setTrackID] = useState<AudDAPIResponse | null>(null);
 
   const getTrackID = async (file: File): Promise<void> => {
-    console.log('firing');
     if (!file) throw new Error('No file provided.');
 
     const formData = new FormData();
@@ -59,6 +58,13 @@ export const useTrackID = (): UseTrackID => {
           },
         }
       );
+
+      if (response.data.status === 'error') {
+        setError('Track recognition failed');
+        setTrackID(null);
+        return;
+      }
+
       console.log(response);
       setTrackID(response.data);
     } catch (error: any) {

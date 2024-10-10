@@ -1,5 +1,9 @@
 import type { useAudioPlayerReturn } from '../hooks/useAudioPlayer';
-import { TbPlayerPlayFilled, TbPlayerPauseFilled } from 'react-icons/tb';
+import {
+  TbPlayerPlayFilled,
+  TbPlayerPauseFilled,
+  TbPlayerTrackNextFilled,
+} from 'react-icons/tb';
 import { motion } from 'framer-motion';
 
 export const PlayerControls = (player: useAudioPlayerReturn) => {
@@ -10,10 +14,10 @@ export const PlayerControls = (player: useAudioPlayerReturn) => {
 
   return (
     <motion.div className="w-full flex flex-col justify-center p-3 gap-5 bg-white text-black rounded-2xl py-5">
-      <div className="flex flex-row items-center justify-center gap-3 ">
+      <div className="flex flex-row items-center justify-center gap-5 ">
         <button
           onClick={player.togglePlayPause}
-          className="text-2xl">
+          className="text-2xl bg-black rounded-full text-white p-3">
           {!player.isPlaying ? <TbPlayerPlayFilled /> : <TbPlayerPauseFilled />}
         </button>
 
@@ -28,6 +32,12 @@ export const PlayerControls = (player: useAudioPlayerReturn) => {
           className="w-full p-2 h-2 bg-white rounded-lg focus:outline-none appearance-none cursor-pointer accent-black "
         />
         <div>{player.audioDurationFormatted}</div>
+
+        <button
+          onClick={player.playNextInQueue}
+          className="text-2xl bg-black rounded-full text-white p-3">
+          <TbPlayerTrackNextFilled />
+        </button>
       </div>
 
       {player.fileQueue.length > 0 && (

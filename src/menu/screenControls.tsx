@@ -72,11 +72,28 @@ const SmartMarquee = ({ children }: PropsWithChildren) => {
   );
 };
 
-export const TrackInfo = ({
-  trackID,
-  isLoading,
-  error,
-}: useAudioPlayerReturn['trackData']) => {
+export const TrackInfo = (player: useAudioPlayerReturn) => {
+  const isAudioFile = player.audioFile ? true : false;
+  const { trackID, isLoading, error } = player.trackData;
+
+  if (!isAudioFile) {
+    return (
+      <motion.div className="flex-1 min-w-0 flex flex-col items-center justify-center bg-white text-black rounded-2xl">
+        <p className="font-bold">Drop in an audio file to get started</p>
+        <p className="text-sm">Click anywhere to open the menu again</p>
+      </motion.div>
+    );
+  }
+
+  if (error) {
+    return (
+      <motion.div className="flex-1 min-w-0 flex flex-col items-center justify-center bg-white text-black rounded-2xl">
+        <p className="font-bold">No Track Data</p>
+        <p className="text-sm">error</p>
+      </motion.div>
+    );
+  }
+
   if (isLoading || !trackID) {
     return (
       <motion.div className="flex-1 min-w-0 flex flex-col items-center justify-center bg-white text-black rounded-2xl">
