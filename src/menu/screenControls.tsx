@@ -1,15 +1,12 @@
 import { useFullscreen } from 'ahooks';
-import { motion } from 'framer-motion';
-import { PropsWithChildren, useState } from 'react';
-import DetectableOverflow from 'react-detectable-overflow';
 import {
   TbFidgetSpinner,
   TbViewportNarrow,
   TbViewportWide,
   TbX,
 } from 'react-icons/tb';
-import Marquee from 'react-fast-marquee';
 import { useAudioPlayerReturn } from '@/hooks/useAudioPlayer';
+import { FlexCard, SmartMarquee } from './layout';
 
 type ScreenControls = {
   screenRef: React.RefObject<HTMLDivElement>;
@@ -51,64 +48,35 @@ export const Exit = ({ onClick }: Exit) => {
   );
 };
 
-const SmartMarquee = ({ children }: PropsWithChildren) => {
-  const [isOverflowing, setIsOverflowing] = useState<boolean>(false);
-
-  if (isOverflowing) {
-    return (
-      <Marquee
-        onCycleComplete={() => setIsOverflowing(false)}
-        pauseOnHover={true}
-        speed={50}>
-        {children}
-      </Marquee>
-    );
-  }
-
-  return (
-    <DetectableOverflow onChange={(status) => setIsOverflowing(status)}>
-      {children}
-    </DetectableOverflow>
-  );
-};
-
 export const TrackInfo = (player: useAudioPlayerReturn) => {
   const isAudioFile = player.audioFile ? true : false;
   const { trackID, isLoading, error } = player.trackData;
 
   if (!isAudioFile) {
     return (
-      <motion.div className="flex-1 min-w-0 flex flex-col items-center justify-center bg-white text-black rounded-2xl">
+      <FlexCard>
         <p className="font-bold">Drop in an audio file to get started</p>
         <p className="text-sm">Click anywhere to open the menu again</p>
-      </motion.div>
+      </FlexCard>
     );
   }
 
   if (error) {
     return (
-      <motion.div className="flex-1 min-w-0 flex flex-col items-center justify-center bg-white text-black rounded-2xl">
+      <FlexCard>
         <p className="font-bold">No Track Data</p>
-        <p className="text-sm">error</p>
-      </motion.div>
+        <p className="text-sm">{error}</p>
+      </FlexCard>
     );
   }
 
   if (isLoading || !trackID) {
     return (
-      <motion.div className="flex-1 min-w-0 flex flex-col items-center justify-center bg-white text-black rounded-2xl">
+      <FlexCard>
         <span>
           <TbFidgetSpinner className="animate-spin text-4xl" />
         </span>
-      </motion.div>
-    );
-  }
-
-  if (error) {
-    return (
-      <motion.div className="flex-1 min-w-0 flex flex-col items-center justify-center bg-white text-black rounded-2xl">
-        <span>{error}</span>
-      </motion.div>
+      </FlexCard>
     );
   }
 
@@ -116,8 +84,8 @@ export const TrackInfo = (player: useAudioPlayerReturn) => {
   const albumArt = result.spotify?.album.images[0].url || '/notfound.png';
 
   return (
-    <motion.div className="flex-1 min-w-0 flex flex-col justify-center bg-white text-black rounded-2xl">
-      <div className="flex flex-row items-center">
+    <FlexCard>
+      <div className="flex flex-row items-center w-full">
         <img
           src={albumArt}
           alt="Album Art"
@@ -133,6 +101,6 @@ export const TrackInfo = (player: useAudioPlayerReturn) => {
           </SmartMarquee>
         </div>
       </div>
-    </motion.div>
+    </FlexCard>
   );
 };

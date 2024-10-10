@@ -1,5 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useState } from 'react';
+import DetectableOverflow from 'react-detectable-overflow';
+import Marquee from 'react-fast-marquee';
 
 export const MenuBackdrop = ({ children }: PropsWithChildren) => {
   return (
@@ -38,5 +40,34 @@ export const MenuCard = ({ children }: PropsWithChildren) => {
     <motion.div className="w-full p-3 flex flex-col justify-center gap-3 bg-white text-black rounded-2xl">
       {children}
     </motion.div>
+  );
+};
+
+export const FlexCard = ({ children }: PropsWithChildren<{}>) => {
+  return (
+    <motion.div className="flex-1 min-w-0 flex flex-col items-center justify-center bg-white text-black rounded-2xl">
+      {children}
+    </motion.div>
+  );
+};
+
+export const SmartMarquee = ({ children }: PropsWithChildren) => {
+  const [isOverflowing, setIsOverflowing] = useState<boolean>(false);
+
+  if (isOverflowing) {
+    return (
+      <Marquee
+        onCycleComplete={() => setIsOverflowing(false)}
+        pauseOnHover={true}
+        speed={50}>
+        {children}
+      </Marquee>
+    );
+  }
+
+  return (
+    <DetectableOverflow onChange={(status) => setIsOverflowing(status)}>
+      {children}
+    </DetectableOverflow>
   );
 };
