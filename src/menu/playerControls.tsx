@@ -4,12 +4,12 @@ import { motion } from 'framer-motion';
 
 export const PlayerControls = (player: useAudioPlayerReturn) => {
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!player.seekToPositionfromPercentage) return;
-    player.seekToPositionfromPercentage(Number(e.target.value));
+    if (!player.seekToPositionFromPercentage) return;
+    player.seekToPositionFromPercentage(Number(e.target.value));
   };
 
   return (
-    <motion.div className="w-full flex flex-col justify-center p-3 gap-3 bg-white text-black rounded-2xl py-5">
+    <motion.div className="w-full flex flex-col justify-center p-3 gap-5 bg-white text-black rounded-2xl py-5">
       <div className="flex flex-row items-center justify-center gap-3 ">
         <button
           onClick={player.togglePlayPause}
@@ -29,6 +29,18 @@ export const PlayerControls = (player: useAudioPlayerReturn) => {
         />
         <div>{player.audioDurationFormatted}</div>
       </div>
+
+      {player.fileQueue.length > 0 && (
+        <div className="flex flex-col gap-3 w-full">
+          {player.fileQueue.map((file, index) => (
+            <div
+              key={index}
+              className="flex w-full bg-black text-white p-3 rounded-xl truncate text-sm">
+              <div>{file.name}</div>
+            </div>
+          ))}
+        </div>
+      )}
     </motion.div>
   );
 };
