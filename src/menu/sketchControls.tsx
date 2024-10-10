@@ -1,10 +1,9 @@
 import React, { PropsWithChildren } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { TbGridDots } from 'react-icons/tb';
-import { PiWavesBold } from 'react-icons/pi';
+import { PiShapesFill, PiWavesBold } from 'react-icons/pi';
 import { MenuCard } from './layout';
-
-type SketchNames = 'dots' | 'waves';
+import { SketchNames } from '@/App';
 
 type SketchButtonProps = {
   currentSketch: SketchNames;
@@ -64,6 +63,13 @@ export const SketchControls: React.FC<Props> = ({
           sketchName="waves"
           onClick={() => setCurrentSketch('waves')}>
           <PiWavesBold />
+        </SketchButton>
+
+        <SketchButton
+          currentSketch={currentSketch}
+          sketchName="shapes"
+          onClick={() => setCurrentSketch('shapes')}>
+          <PiShapesFill />
         </SketchButton>
       </div>
     </MenuCard>

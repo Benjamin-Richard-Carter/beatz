@@ -10,8 +10,9 @@ import { PlayerControls } from './menu/playerControls';
 import { ScreenControls, Exit, TrackInfo } from './menu/screenControls';
 import { MenuContainer, MenuBackdrop } from './menu/layout';
 import { SketchControls } from './menu/sketchControls';
+import { shapes } from './scenes/shapes';
 
-export type SketchNames = 'dots' | 'waves';
+export type SketchNames = 'dots' | 'waves' | 'shapes';
 export type sketchList = Record<SketchNames, Sketch>;
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
   const scenes: sketchList = {
     dots: dots,
     waves: waves,
+    shapes: shapes,
   };
 
   const handleonClick = () => {

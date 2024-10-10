@@ -54,7 +54,7 @@ export function useAudioPlayer() {
       }
 
       try {
-        getTrackID(file);
+        //getTrackID(file);
       } catch (error) {
         console.error('Track ID failed:', error);
       }
