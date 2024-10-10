@@ -1,16 +1,5 @@
-import { forwardRef, PropsWithChildren, useRef } from 'react';
-import type { useAudioPlayerReturn } from './hooks/useAudioPlayer';
-import { AudioMode } from './types';
-import {
-  TbDeviceFloppy,
-  TbMicrophone,
-  TbHandFinger,
-  TbX,
-  TbViewportWide,
-  TbPlayerPlay,
-  TbPlayerPause,
-  TbViewportNarrow,
-} from 'react-icons/tb';
+import { PropsWithChildren } from 'react';
+import { TbX, TbViewportWide, TbViewportNarrow } from 'react-icons/tb';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useFullscreen } from 'ahooks';
 

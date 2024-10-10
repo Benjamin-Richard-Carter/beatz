@@ -1,9 +1,10 @@
 import React, { PropsWithChildren } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TbGridDots } from 'react-icons/tb';
+import { TbCirclesFilled, TbGridDots } from 'react-icons/tb';
 import { PiShapesFill, PiWavesBold } from 'react-icons/pi';
 import { MenuCard } from './layout';
 import { SketchNames } from '@/App';
+import { IoMdPlanet } from 'react-icons/io';
 
 type SketchButtonProps = {
   currentSketch: SketchNames;
@@ -51,7 +52,7 @@ export const SketchControls: React.FC<Props> = ({
 }) => {
   return (
     <MenuCard>
-      <div className="flex flex-row gap-3">
+      <div className="flex flex-row gap-3 justify-evenly">
         <SketchButton
           currentSketch={currentSketch}
           sketchName="dots"
@@ -64,12 +65,23 @@ export const SketchControls: React.FC<Props> = ({
           onClick={() => setCurrentSketch('waves')}>
           <PiWavesBold />
         </SketchButton>
-
         <SketchButton
           currentSketch={currentSketch}
           sketchName="shapes"
           onClick={() => setCurrentSketch('shapes')}>
           <PiShapesFill />
+        </SketchButton>
+        <SketchButton
+          currentSketch={currentSketch}
+          sketchName="sphere"
+          onClick={() => setCurrentSketch('sphere')}>
+          <IoMdPlanet />
+        </SketchButton>
+        <SketchButton
+          currentSketch={currentSketch}
+          sketchName="hex"
+          onClick={() => setCurrentSketch('hex')}>
+          <TbCirclesFilled />
         </SketchButton>
       </div>
     </MenuCard>
