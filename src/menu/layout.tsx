@@ -8,7 +8,7 @@ export const MenuBackdrop = ({ children }: PropsWithChildren) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="w-full h-full flex items-center justify-center z-50 backdrop-blur-3xl "
+      className="w-full h-full flex items-center justify-center z-50 backdrop-blur bg-black/30"
       onClick={(e) => e.stopPropagation()}>
       {children}
     </motion.div>
@@ -27,7 +27,7 @@ export const MenuContainer = ({ children }: PropsWithChildren) => {
         stiffness: 260,
         damping: 20,
       }}
-      className="w-full m-5 rounded-3xl p-3 gap-3 flex flex-col z-50 items-center md:w-1/3  ">
+      className="w-full m-5 rounded-3xl p-3 gap-3 flex flex-col z-50 items-center md:w-1/3    ">
       <AnimatePresence>{children}</AnimatePresence>
     </motion.div>
   );
@@ -35,7 +35,7 @@ export const MenuContainer = ({ children }: PropsWithChildren) => {
 
 export const MenuCard = ({ children }: PropsWithChildren) => {
   return (
-    <motion.div className="w-full flex flex-col justify-center p-3 gap-3 bg-white text-black rounded-2xl py-5">
+    <motion.div className="w-full p-3 flex flex-col justify-center gap-3 bg-white text-black rounded-2xl">
       {children}
     </motion.div>
   );

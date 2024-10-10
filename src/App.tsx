@@ -9,13 +9,18 @@ import { motion } from 'framer-motion';
 import { PlayerControls } from './menu/playerControls';
 import { ScreenControls, Exit, TrackInfo } from './menu/screenControls';
 import { MenuContainer, MenuBackdrop } from './menu/layout';
+import { SketchControls } from './menu/sketchControls';
+
+export type SketchNames = 'dots' | 'waves';
+export type sketchList = Record<SketchNames, Sketch>;
 
 function App() {
   const player = useAudioPlayer();
   const [menuToggled, setMenuToggled] = useState(false);
   const screenRef = useRef<HTMLDivElement>(null);
+  const [currentSketch, setCurrentSketch] = useState<SketchNames>('dots');
 
-  const scenes: Record<string, Sketch> = {
+  const scenes: sketchList = {
     dots: dots,
     waves: waves,
   };
@@ -50,6 +55,10 @@ function App() {
                 </div>
 
                 {player.audioFile && <PlayerControls {...player} />}
+                <SketchControls
+                  setCurrentSketch={setCurrentSketch}
+                  currentSketch={currentSketch}
+                />
               </MenuContainer>
             </MenuBackdrop>
           </>
@@ -59,7 +68,7 @@ function App() {
       <div className="absolute z-0">
         <ReactP5Wrapper
           key={player.audioFile ? player.audioFile.name : 'no-file'}
-          sketch={waves}
+          sketch={scenes[currentSketch]}
           analyzerNode={player.analyzerNode}
           audioContext={player.audioContext}
         />
