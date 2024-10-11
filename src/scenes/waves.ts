@@ -1,11 +1,7 @@
-import { Sketch, SketchProps } from '@p5-wrapper/react';
 import { createBeatDetector } from '../utils/audio';
+import { Visualizer, VisualizerProps } from '@/types';
 
-type MySketchProps = SketchProps & {
-  analyzerNode: AnalyserNode | null;
-};
-
-export const waves: Sketch<MySketchProps> = (p5) => {
+export const waves: Visualizer = (p5) => {
   let analyzerNode: AnalyserNode | undefined = undefined;
   let currentPhase = 0;
 
@@ -21,6 +17,19 @@ export const waves: Sketch<MySketchProps> = (p5) => {
     '#FF00FF',
     '#00FF00',
   ];
+
+  type Phases = {
+    [key: number]: [number, number, number, number, number, number, number];
+  };
+
+  const phases: Phases = {
+    0: [0.05, 0.05, 0.2, 0.5, 15, 0, 5],
+    1: [0.05, 0.05, 0.8, 0.8, 0.5, 1.5, 4],
+    2: [0.01, 0.01, 3, 0.01, 0.3, 0.4, 5],
+    3: [0.01, 0.1, 0.1, 3, 0.2, 0.4, 5],
+    4: [0.05, 0.05, 0.5, 0.5, 1, 1, 4],
+    5: [0.04, 0.03, 10, 0.5, 0.2, 0.3, 3],
+  };
 
   const beatDetector = createBeatDetector({
     energyHistoryLength: 500,
@@ -42,24 +51,11 @@ export const waves: Sketch<MySketchProps> = (p5) => {
     p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
   };
 
-  p5.updateWithProps = (props: MySketchProps) => {
+  p5.updateWithProps = (props: VisualizerProps) => {
     if (props.analyzerNode) {
       analyzerNode = props.analyzerNode;
       beatDetector.initializeAnalyzerNode(analyzerNode);
     }
-  };
-
-  type Phases = {
-    [key: number]: [number, number, number, number, number, number, number];
-  };
-
-  const phases: Phases = {
-    0: [0.05, 0.05, 0.2, 0.5, 15, 0, 5],
-    1: [0.05, 0.05, 0.8, 0.8, 0.5, 1.5, 4],
-    2: [0.01, 0.01, 3, 0.01, 0.3, 0.4, 5],
-    3: [0.01, 0.1, 0.1, 3, 0.2, 0.4, 5],
-    4: [0.05, 0.05, 0.5, 0.5, 1, 1, 4],
-    5: [0.04, 0.03, 10, 0.5, 0.2, 0.3, 3],
   };
 
   p5.draw = () => {

@@ -1,24 +1,16 @@
-import { Sketch } from '@p5-wrapper/react';
 import { createBeatDetector } from '../utils/audio';
+import { shuffleArray } from '../utils/array';
+import { Visualizer, VisualizerProps } from '@/types';
 
-type MySketchProps = {
-  analyzerNode: AnalyserNode | null;
-};
-
-type Shape = 'circle' | 'triangle';
-
-interface GridCell {
-  shape: Shape;
-}
-
-export const shapes: Sketch<MySketchProps> = (p5) => {
+export const shapes: Visualizer = (p5) => {
   let analyzerNode: AnalyserNode | undefined = undefined;
-  let grid: GridCell[][] = [];
+  type Shape = 'circle' | 'triangle';
+
+  let grid: { shape: Shape }[][] = [];
   const gridSize = 8;
   let cellWidth: number;
   let cellHeight: number;
   let shuffledIndices: number[] = [];
-
   let color1: string;
   let color2: string;
 
@@ -32,6 +24,34 @@ export const shapes: Sketch<MySketchProps> = (p5) => {
 
   let shaderProgram: any;
   let bufferTexture: any;
+
+  p5.setup = () => {
+    p5.createCanvas(p5.windowWidth, p5.windowHeight, p5.WEBGL);
+    cellWidth = p5.width / gridSize;
+    cellHeight = p5.height / gridSize;
+    generateGrid();
+    [color1, color2] = p5.random(colorPairs) as [string, string];
+
+    shaderProgram = p5.createShader(vertexShader, fragmentShader);
+    bufferTexture = p5.createGraphics(p5.width, p5.height);
+  };
+
+  p5.windowResized = () => {
+    p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
+    cellWidth = p5.width / gridSize;
+    cellHeight = p5.height / gridSize;
+    bufferTexture = p5.createGraphics(p5.width, p5.height);
+  };
+
+  p5.updateWithProps = (props: VisualizerProps) => {
+    if (props.analyzerNode) {
+      analyzerNode = props.analyzerNode;
+      beatDetector.initializeAnalyzerNode(analyzerNode);
+      shuffledIndices = shuffleArray(
+        Array.from({ length: analyzerNode.frequencyBinCount }, (_, i) => i)
+      );
+    }
+  };
 
   const vertexShader = `
     attribute vec3 aPosition;
@@ -82,54 +102,13 @@ export const shapes: Sketch<MySketchProps> = (p5) => {
     onBeatDetected: () => {},
   });
 
-  function shuffleArray<T>(array: T[]): T[] {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  }
-
   function generateGrid() {
-    grid = [];
-    for (let i = 0; i < gridSize; i++) {
-      const row: GridCell[] = [];
-      for (let j = 0; j < gridSize; j++) {
-        row.push({
-          shape: Math.random() < 0.5 ? 'circle' : 'triangle',
-        });
-      }
-      grid.push(row);
-    }
+    grid = Array.from({ length: gridSize }, () =>
+      Array.from({ length: gridSize }, () => ({
+        shape: Math.random() < 0.5 ? 'circle' : 'triangle',
+      }))
+    );
   }
-
-  p5.setup = () => {
-    p5.createCanvas(p5.windowWidth, p5.windowHeight, p5.WEBGL);
-    cellWidth = p5.width / gridSize;
-    cellHeight = p5.height / gridSize;
-    generateGrid();
-    [color1, color2] = p5.random(colorPairs) as [string, string];
-
-    shaderProgram = p5.createShader(vertexShader, fragmentShader);
-    bufferTexture = p5.createGraphics(p5.width, p5.height);
-  };
-
-  p5.windowResized = () => {
-    p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
-    cellWidth = p5.width / gridSize;
-    cellHeight = p5.height / gridSize;
-    bufferTexture = p5.createGraphics(p5.width, p5.height);
-  };
-
-  p5.updateWithProps = (props: MySketchProps) => {
-    if (props.analyzerNode) {
-      analyzerNode = props.analyzerNode;
-      beatDetector.initializeAnalyzerNode(analyzerNode);
-      shuffledIndices = shuffleArray(
-        Array.from({ length: analyzerNode.frequencyBinCount }, (_, i) => i)
-      );
-    }
-  };
 
   p5.draw = () => {
     const time = p5.millis();

@@ -1,20 +1,14 @@
-// newTest.ts
-import { Sketch, SketchProps } from '@p5-wrapper/react';
 import { createBeatDetector } from '../utils/audio';
+import { shuffleArray } from '../utils/array';
+import { Visualizer, VisualizerProps } from '@/types';
 
-type MySketchProps = SketchProps & {
-  analyzerNode: AnalyserNode | null;
-};
-
-export const dots: Sketch<MySketchProps> = (p5) => {
+export const dots: Visualizer = (p5) => {
   let analyzerNode: AnalyserNode | null = null;
   let currentColorPair = 0;
   let shuffledIndices: number[];
   let colorAssignments: boolean[];
 
-  type ColorPair = [string, string];
-
-  const colorPairs: Record<number, ColorPair> = {
+  const colorPairs: Record<number, [string, string]> = {
     0: ['#ffffff', '#ffffff'],
     1: ['#ff0000', '#ff9900'],
     2: ['#44c8e9', '#09f529'],
@@ -35,13 +29,22 @@ export const dots: Sketch<MySketchProps> = (p5) => {
     },
   });
 
-  function shuffleArray<T>(array: T[]): T[] {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
+  p5.setup = () => {
+    p5.createCanvas(p5.windowWidth, p5.windowHeight);
+    initializeArrays();
+  };
+
+  p5.windowResized = () => {
+    p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
+  };
+
+  p5.updateWithProps = (props: VisualizerProps) => {
+    if (props.analyzerNode) {
+      analyzerNode = props.analyzerNode;
+      beatDetector.initializeAnalyzerNode(analyzerNode);
+      initializeArrays();
     }
-    return array;
-  }
+  };
 
   function randomizeColorAssignments(numCells: number): void {
     colorAssignments = Array(numCells)
@@ -58,23 +61,6 @@ export const dots: Sketch<MySketchProps> = (p5) => {
       randomizeColorAssignments(numBands);
     }
   }
-
-  p5.setup = () => {
-    p5.createCanvas(p5.windowWidth, p5.windowHeight);
-    initializeArrays();
-  };
-
-  p5.windowResized = () => {
-    p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
-  };
-
-  p5.updateWithProps = (props: MySketchProps) => {
-    if (props.analyzerNode) {
-      analyzerNode = props.analyzerNode;
-      beatDetector.initializeAnalyzerNode(analyzerNode);
-      initializeArrays();
-    }
-  };
 
   const getColor = (index: number): string => {
     const colorPair = colorPairs[currentColorPair];

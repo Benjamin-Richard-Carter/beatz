@@ -1,19 +1,16 @@
-import { Sketch } from '@p5-wrapper/react';
 import { createBeatDetector } from '../utils/audio';
+import { shuffleArray } from '../utils/array';
+import { Visualizer, VisualizerProps } from '@/types';
 
-type MySketchProps = {
-  analyzerNode: AnalyserNode | null;
-};
-
-export const hex: Sketch<MySketchProps> = (p) => {
+export const hex: Visualizer = (p5) => {
   let analyzerNode: AnalyserNode | undefined = undefined;
   let shuffledIndices: number[] = [];
-  const numRows = 10;
   let numCols: number;
   let circleSize: number;
-  const minSizeFactor = 0.5;
   let currentPalette: string[] = [];
   let paletteIndex = 0;
+  const numRows = 10;
+  const minSizeFactor = 0.5;
 
   const colorPalettes = [
     ['#FF6B35', '#F7C59F', '#EFEFD0', '#004E89', '#2A9D8F', '#E9C46A'],
@@ -37,32 +34,24 @@ export const hex: Sketch<MySketchProps> = (p) => {
     },
   });
 
-  function shuffleArray<T>(array: T[]): T[] {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(p.random(i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  }
-
   function calculateLayout() {
-    circleSize = p.height / (numRows * 0.85); // Increased circle size
-    numCols = Math.ceil(p.width / (circleSize * 0.866)) + 1;
+    circleSize = p5.height / (numRows * 0.85);
+    numCols = Math.ceil(p5.width / (circleSize * 0.866)) + 1;
   }
 
-  p.setup = () => {
-    p.createCanvas(p.windowWidth, p.windowHeight);
-    p.noStroke();
+  p5.setup = () => {
+    p5.createCanvas(p5.windowWidth, p5.windowHeight);
+    p5.noStroke();
     calculateLayout();
     currentPalette = colorPalettes[0];
   };
 
-  p.windowResized = () => {
-    p.resizeCanvas(p.windowWidth, p.windowHeight);
+  p5.windowResized = () => {
+    p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
     calculateLayout();
   };
 
-  p.updateWithProps = (props: MySketchProps) => {
+  p5.updateWithProps = (props: VisualizerProps) => {
     if (props.analyzerNode) {
       analyzerNode = props.analyzerNode;
       beatDetector.initializeAnalyzerNode(analyzerNode);
@@ -72,11 +61,11 @@ export const hex: Sketch<MySketchProps> = (p) => {
     }
   };
 
-  p.draw = () => {
-    p.background('#1A1A1A');
+  p5.draw = () => {
+    p5.background('#1A1A1A');
 
     if (analyzerNode) {
-      const time = p.millis();
+      const time = p5.millis();
       const frequencyDataArray =
         beatDetector.detectBeat(time).frequencyDataArray;
 
@@ -87,10 +76,10 @@ export const hex: Sketch<MySketchProps> = (p) => {
 
           const index = (i * numCols + j) % shuffledIndices.length;
           const frequency = frequencyDataArray[shuffledIndices[index]];
-          const sizeFactor = p.map(frequency, 0, 255, 1, minSizeFactor);
+          const sizeFactor = p5.map(frequency, 0, 255, 1, minSizeFactor);
 
-          p.fill(currentPalette[(i + j) % currentPalette.length]);
-          p.ellipse(x, y, circleSize * sizeFactor);
+          p5.fill(currentPalette[(i + j) % currentPalette.length]);
+          p5.ellipse(x, y, circleSize * sizeFactor);
         }
       }
     }
