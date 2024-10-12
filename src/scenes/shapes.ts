@@ -1,6 +1,8 @@
 import { createBeatDetector } from '../utils/audio';
 import { shuffleArray } from '../utils/array';
 import { Visualizer, VisualizerProps } from '@/types';
+import quadShader from '../shaders/quad.vert';
+import fragmentShader from '../shaders/wave.frag';
 
 export const shapes: Visualizer = (p5) => {
   let analyzerNode: AnalyserNode | undefined = undefined;
@@ -32,7 +34,7 @@ export const shapes: Visualizer = (p5) => {
     generateGrid();
     [color1, color2] = p5.random(colorPairs) as [string, string];
 
-    shaderProgram = p5.createShader(vertexShader, fragmentShader);
+    shaderProgram = p5.createShader(quadShader, fragmentShader);
     bufferTexture = p5.createGraphics(p5.width, p5.height);
   };
 
@@ -52,39 +54,6 @@ export const shapes: Visualizer = (p5) => {
       );
     }
   };
-
-  const vertexShader = `
-    attribute vec3 aPosition;
-    attribute vec2 aTexCoord;
-    varying vec2 vTexCoord;
-
-    void main() {
-      vTexCoord = aTexCoord;
-      vec4 positionVec4 = vec4(aPosition, 1.0);
-      positionVec4.xy = positionVec4.xy * 2.0 - 1.0;
-      gl_Position = positionVec4;
-    }
-  `;
-
-  const fragmentShader = `
-    precision mediump float;
-    uniform sampler2D uSampler;
-    uniform float uTime;
-    varying vec2 vTexCoord;
-
-    void main() {
-      vec2 uv = vTexCoord;
-      float amplitude = 0.01;
-      float frequency = 5.0;
-      float waveX = sin(frequency * uv.y + uTime) * amplitude;
-      float waveY = sin(frequency * uv.x + uTime) * amplitude;
-      
-      uv.x += waveX;
-      uv.y += waveY;
-      
-      gl_FragColor = texture2D(uSampler, uv);
-    }
-  `;
 
   const beatDetector = createBeatDetector({
     energyHistoryLength: 500,

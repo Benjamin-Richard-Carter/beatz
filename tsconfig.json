@@ -9,6 +9,6 @@
     }
   ],
   "compilerOptions": {
-    "types": ["node"]
+    "types": ["node", "vite-plugin-glsl/ext"]
   }
 }
