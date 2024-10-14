@@ -54,7 +54,7 @@ export function useAudioPlayer() {
       }
 
       try {
-        getTrackID(file);
+        //getTrackID(file);
       } catch (error) {
         console.error('Track ID failed:', error);
       }
@@ -71,6 +71,13 @@ export function useAudioPlayer() {
       const updatedQueue = [...prevQueue, ...newFiles];
       return updatedQueue;
     });
+  }
+
+  function reorderFileQueue(newOrder: string[]) {
+    const newQueue = newOrder.map(
+      (name) => fileQueue.find((file) => file.name === name)!
+    );
+    setFileQueue(newQueue);
   }
 
   function playNextInQueue() {
@@ -96,6 +103,18 @@ export function useAudioPlayer() {
         }
       }
     }
+  }
+
+  function stopPlayback() {
+    console.log('Stopping playback');
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = '';
+    }
+    setFileQueue([]);
+    setAudioFile(null);
+    setIsPlaying(false);
+    setElapsedTime(0);
   }
 
   function handleFileDrop(event: React.DragEvent<HTMLDivElement>) {
@@ -195,18 +214,20 @@ export function useAudioPlayer() {
     audioRef,
     analyzerNode,
     audioContext,
-    handleFileDrop,
-    handleFileSelect,
-    handleDragOver,
-    togglePlayPause,
-    seekToPositionFromPercentage,
-    playNextInQueue,
     fileQueue,
     isPlaying,
     audioDurationFormatted,
     elapsedTimeFormatted,
     elapsedTimePercentage,
     trackData,
+    handleFileDrop,
+    handleFileSelect,
+    handleDragOver,
+    togglePlayPause,
+    seekToPositionFromPercentage,
+    playNextInQueue,
+    reorderFileQueue,
+    stopPlayback,
   };
 }
 

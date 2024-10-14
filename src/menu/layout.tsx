@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { PropsWithChildren, useState } from 'react';
 import DetectableOverflow from 'react-detectable-overflow';
 import Marquee from 'react-fast-marquee';
@@ -30,7 +30,7 @@ export const MenuContainer = ({ children }: PropsWithChildren) => {
         damping: 20,
       }}
       className="w-full m-5 rounded-3xl p-3 gap-3 flex flex-col z-50 items-center md:w-1/3    ">
-      <AnimatePresence>{children}</AnimatePresence>
+      {children}
     </motion.div>
   );
 };
