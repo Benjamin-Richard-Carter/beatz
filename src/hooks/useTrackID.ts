@@ -42,13 +42,15 @@ export const useTrackID = (): UseTrackID => {
 
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('api_token', import.meta.env.VITE_AUDD_API_KEY as string);
+    formData.append('return', 'spotify,apple_music');
 
     setIsLoading(true);
     setError(null);
 
     try {
       const response = await axios.post<AudDAPIResponse>(
-        '/api/identify-track',
+        'https://api.audd.io/',
         formData,
         {
           headers: {
@@ -63,6 +65,7 @@ export const useTrackID = (): UseTrackID => {
         return;
       }
 
+      console.log(response);
       setTrackID(response.data);
     } catch (error: any) {
       const errorMessage = `File upload failed: ${error.message}`;
