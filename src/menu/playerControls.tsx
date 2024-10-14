@@ -47,9 +47,10 @@ export const PlayerControls = (player: useAudioPlayerReturn) => {
           </PlayerButton>
         )}
       </div>
-      <div className="flex-1 overflow-y-hidden">
-        <LayoutGroup>
-          {player.fileQueue.length > 0 && (
+
+      <LayoutGroup>
+        {player.fileQueue.length > 0 && (
+          <div className="flex-1 overflow-y-hidden">
             <Reorder.Group
               axis="y"
               values={player.fileQueue.map((file) => file.UUID)}
@@ -67,9 +68,9 @@ export const PlayerControls = (player: useAudioPlayerReturn) => {
                 </Reorder.Item>
               ))}
             </Reorder.Group>
-          )}
-        </LayoutGroup>
-      </div>
+          </div>
+        )}
+      </LayoutGroup>
     </motion.div>
   );
 };
