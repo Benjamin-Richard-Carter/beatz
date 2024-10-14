@@ -1,4 +1,4 @@
-import { AnimatePresence, LayoutGroup, Reorder, motion } from 'framer-motion';
+import { LayoutGroup, Reorder, motion } from 'framer-motion';
 import type { useAudioPlayerReturn } from '../hooks/useAudioPlayer';
 import {
   TbPlayerPlayFilled,
@@ -6,6 +6,7 @@ import {
   TbPlayerTrackNextFilled,
   TbPlayerStopFilled,
 } from 'react-icons/tb';
+import { PlayerButton } from './layout';
 
 export const PlayerControls = (player: useAudioPlayerReturn) => {
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -16,13 +17,11 @@ export const PlayerControls = (player: useAudioPlayerReturn) => {
   const isLastTrack = player.fileQueue.length === 0;
 
   return (
-    <motion.div className="w-full flex flex-col justify-center p-3 gap-5 bg-white text-black rounded-2xl">
-      <div className="flex flex-row items-center justify-center gap-5 ">
-        <button
-          onClick={isLastTrack ? player.togglePlayPause : player.stopPlayback}
-          className="text-2xl bg-black rounded-full text-white p-3">
-          {isLastTrack ? <TbPlayerPlayFilled /> : <TbPlayerPauseFilled />}
-        </button>
+    <motion.div className="w-full flex flex-col justify-between p-3 gap-3 bg-white text-black rounded-2xl min-h-0">
+      <div className="flex flex-row items-center justify-center gap-5 text-xl">
+        <PlayerButton onClick={player.togglePlayPause}>
+          {player.isPlaying ? <TbPlayerPauseFilled /> : <TbPlayerPlayFilled />}
+        </PlayerButton>
 
         <div>{player.elapsedTimeFormatted}</div>
         <input
@@ -36,51 +35,41 @@ export const PlayerControls = (player: useAudioPlayerReturn) => {
         />
         <div>{player.audioDurationFormatted}</div>
 
-        <button
-          onClick={player.playNextInQueue}
-          className="text-2xl bg-black rounded-full text-white p-3">
-          {isLastTrack ? <TbPlayerStopFilled /> : <TbPlayerTrackNextFilled />}
-        </button>
+        {!isLastTrack && (
+          <PlayerButton onClick={player.playNextInQueue}>
+            <TbPlayerTrackNextFilled />
+          </PlayerButton>
+        )}
+
+        {isLastTrack && (
+          <PlayerButton onClick={player.stopPlayback}>
+            <TbPlayerStopFilled />
+          </PlayerButton>
+        )}
       </div>
-      <LayoutGroup>
-        <AnimatePresence>
+      <div className="flex-1 overflow-y-hidden">
+        <LayoutGroup>
           {player.fileQueue.length > 0 && (
-            <motion.div
-              layout="position"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.1 }}
-              className="w-full overflow-hidden ">
-              <Reorder.Group
-                axis="y"
-                drag
-                values={player.fileQueue.map((file) => file.name)}
-                onReorder={player.reorderFileQueue}
-                className="flex flex-col gap-2">
-                <AnimatePresence>
-                  {player.fileQueue.map((file) => (
-                    <Reorder.Item
-                      key={file.name}
-                      value={file.name}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.1 }}>
-                      <motion.div
-                        className="flex w-full bg-black text-white p-3 rounded-xl truncate text-sm"
-                        layout
-                        layoutId={file.name}>
-                        {file.name}
-                      </motion.div>
-                    </Reorder.Item>
-                  ))}
-                </AnimatePresence>
-              </Reorder.Group>
-            </motion.div>
+            <Reorder.Group
+              axis="y"
+              values={player.fileQueue.map((file) => file.UUID)}
+              onReorder={player.reorderFileQueue}
+              className="flex flex-col gap-2 w-full max-h-full">
+              {player.fileQueue.map((track) => (
+                <Reorder.Item
+                  layout
+                  key={track.UUID}
+                  value={track.UUID}
+                  transition={{ duration: 0.1 }}
+                  className="flex w-full bg-black text-white p-3 rounded-xl truncate text-lg"
+                  layoutId={track.UUID}>
+                  {track.file.name}
+                </Reorder.Item>
+              ))}
+            </Reorder.Group>
           )}
-        </AnimatePresence>
-      </LayoutGroup>
+        </LayoutGroup>
+      </div>
     </motion.div>
   );
 };

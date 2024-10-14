@@ -73,7 +73,7 @@ function App() {
 
       <div className="absolute z-0">
         <ReactP5Wrapper
-          key={player.audioFile ? player.audioFile.name : 'no-file'}
+          key={player.audioFile ? player.audioFile.UUID : 'no-file'}
           sketch={scenes[currentSketch]}
           analyzerNode={player.analyzerNode}
           audioContext={player.audioContext}

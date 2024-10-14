@@ -27,7 +27,7 @@ export const ScreenControls = ({ screenRef }: ScreenControls) => {
 
   return (
     <button
-      className="rounded-2xl flex flex-row items-center justify-center gap-5 bg-white aspect-square w-20 flex-shrink-0 text-2xl"
+      className="rounded-2xl flex flex-row items-center justify-center gap-5 bg-white aspect-square w-20 flex-shrink-0 text-3xl"
       onClick={handleFullscreen}>
       {isFullScreen ? <TbViewportNarrow /> : <TbViewportWide />}
     </button>
@@ -41,7 +41,7 @@ type Exit = {
 export const Exit = ({ onClick }: Exit) => {
   return (
     <button
-      className="rounded-2xl flex flex-row items-center justify-center gap-5 bg-white aspect-square w-20 flex-shrink-0 text-2xl"
+      className="rounded-2xl flex flex-row items-center justify-center gap-5 bg-white aspect-square w-20 flex-shrink-0 text-3xl"
       onClick={onClick}>
       <TbX />
     </button>

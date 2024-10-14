@@ -1,10 +1,16 @@
 import { elapsedPercentage, secondsToHHMMSS } from '../utils/time';
 import { useState, useRef, useEffect } from 'react';
 import { useTrackID } from './useTrackID';
+import { v4 as uuid } from 'uuid';
+
+type PlayerTrack = {
+  file: File;
+  UUID: string;
+};
 
 export function useAudioPlayer() {
-  const [audioFile, setAudioFile] = useState<File | null>(null);
-  const [fileQueue, setFileQueue] = useState<File[]>([]);
+  const [audioFile, setAudioFile] = useState<PlayerTrack | null>(null);
+  const [fileQueue, setFileQueue] = useState<PlayerTrack[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [analyzerNode, setAnalyzerNode] = useState<AnalyserNode | null>(null);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
@@ -29,13 +35,13 @@ export function useAudioPlayer() {
     }
   }
 
-  async function loadAudioFile(file: File) {
-    if (acceptedFileTypes.includes(file.type)) {
-      setAudioFile(file);
+  async function loadAudioFile(track: PlayerTrack) {
+    if (acceptedFileTypes.includes(track.file.type)) {
+      setAudioFile(track);
 
       if (audioRef.current) {
         setupAudioPipeline();
-        audioRef.current.src = URL.createObjectURL(file);
+        audioRef.current.src = URL.createObjectURL(track.file);
 
         try {
           await audioRef.current.play();
@@ -43,7 +49,7 @@ export function useAudioPlayer() {
           setIsPlaying(true);
           setFileQueue((prevQueue) => {
             const newQueue = prevQueue.filter(
-              (queuedFile) => queuedFile !== file
+              (queuedFile) => queuedFile !== track
             );
             return newQueue;
           });
@@ -54,7 +60,7 @@ export function useAudioPlayer() {
       }
 
       try {
-        //getTrackID(file);
+        getTrackID(track.file);
       } catch (error) {
         console.error('Track ID failed:', error);
       }
@@ -67,15 +73,33 @@ export function useAudioPlayer() {
     const newFiles = files.filter((file) =>
       acceptedFileTypes.includes(file.type)
     );
-    setFileQueue((prevQueue) => {
-      const updatedQueue = [...prevQueue, ...newFiles];
-      return updatedQueue;
-    });
+
+    const newTracks = newFiles.map((file) => ({
+      file,
+      UUID: uuid(),
+    }));
+
+    if (newFiles.length === 0) {
+      return;
+    }
+
+    if (!audioFile) {
+      loadAudioFile(newTracks[0]);
+      const nextTracks = newTracks.slice(1);
+      setFileQueue(nextTracks);
+    }
+
+    if (audioFile) {
+      setFileQueue((prevQueue) => {
+        const updatedQueue = [...prevQueue, ...newTracks];
+        return updatedQueue;
+      });
+    }
   }
 
   function reorderFileQueue(newOrder: string[]) {
     const newQueue = newOrder.map(
-      (name) => fileQueue.find((file) => file.name === name)!
+      (UUID) => fileQueue.find((track) => track.UUID === UUID)!
     );
     setFileQueue(newQueue);
   }
@@ -106,7 +130,6 @@ export function useAudioPlayer() {
   }
 
   function stopPlayback() {
-    console.log('Stopping playback');
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.src = '';
